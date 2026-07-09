@@ -8,6 +8,7 @@ export default function Dashboard({ token, onLogout }) {
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
+  const [deleteId, setDeleteId] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -48,6 +49,25 @@ export default function Dashboard({ token, onLogout }) {
     fetchProducts(search);
   };
 
+  const handleDelete = async () => {
+    if (!deleteId) return;
+    try {
+      const res = await fetch(`/api/v1/products/${deleteId}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        alert(data.message || 'Delete failed');
+        return;
+      }
+      setDeleteId(null);
+      fetchProducts();
+    } catch (err) {
+      alert(err.message);
+    }
+  };
+
   const handleLogout = () => {
     onLogout();
     navigate('/');
@@ -63,9 +83,12 @@ export default function Dashboard({ token, onLogout }) {
               <span className="text-xl font-bold text-primary-700">BuyIt</span>
             </div>
             {user && (
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3">
                 <span className="text-sm text-gray-600 hidden sm:block">Hi, {user.name}</span>
-                <button onClick={handleLogout} className="px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition">
+                <button onClick={() => navigate('/product/new')} className="px-3 py-2 text-sm font-medium text-primary-600 hover:bg-primary-50 rounded-lg transition flex items-center gap-1">
+                  <span>+</span> Add
+                </button>
+                <button onClick={handleLogout} className="px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition">
                   Logout
                 </button>
               </div>
@@ -119,7 +142,7 @@ export default function Dashboard({ token, onLogout }) {
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {products.map((product) => (
-                <div key={product._id} className="card group cursor-pointer">
+                <div key={product._id} className="card group">
                   <div className="relative h-48 bg-gradient-to-br from-primary-100 to-indigo-100 flex items-center justify-center overflow-hidden">
                     <span className="text-6xl group-hover:scale-110 transition-transform duration-300">
                       {product.category === 'electronics' ? '📱' : product.category === 'clothing' ? '👕' : product.category === 'books' ? '📚' : product.category === 'home' ? '🏠' : product.category === 'sports' ? '⚽' : '📦'}
@@ -131,19 +154,25 @@ export default function Dashboard({ token, onLogout }) {
                     )}
                   </div>
                   <div className="p-4">
-                    <h3 className="font-semibold text-gray-900 text-lg mb-1 group-hover:text-primary-600 transition-colors">
-                      {product.name}
-                    </h3>
+                    <h3 className="font-semibold text-gray-900 text-lg mb-1">{product.name}</h3>
                     {product.description && (
                       <p className="text-sm text-gray-500 mb-3 line-clamp-2">{product.description}</p>
                     )}
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between mb-3">
                       <span className="text-xl font-bold text-primary-600">${product.price?.toFixed(2)}</span>
                       {product.category && (
                         <span className="text-xs bg-primary-50 text-primary-600 px-2.5 py-1 rounded-full font-medium capitalize">
                           {product.category}
                         </span>
                       )}
+                    </div>
+                    <div className="flex gap-2">
+                      <button onClick={() => navigate(`/product/edit/${product._id}`)} className="flex-1 px-3 py-2 text-sm font-medium text-primary-600 bg-primary-50 hover:bg-primary-100 rounded-lg transition">
+                        Edit
+                      </button>
+                      <button onClick={() => setDeleteId(product._id)} className="flex-1 px-3 py-2 text-sm font-medium text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition">
+                        Delete
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -152,38 +181,32 @@ export default function Dashboard({ token, onLogout }) {
 
             {pagination && pagination.pages > 1 && (
               <div className="flex items-center justify-center gap-2 mt-10">
-                <button
-                  onClick={() => setPage((p) => Math.max(1, p - 1))}
-                  disabled={page === 1}
-                  className="px-4 py-2 rounded-xl border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition"
-                >
-                  ← Prev
-                </button>
+                <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} className="px-4 py-2 rounded-xl border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition">← Prev</button>
                 {[...Array(pagination.pages)].slice(0, 5).map((_, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setPage(i + 1)}
-                    className={`px-4 py-2 rounded-xl transition ${
-                      page === i + 1
-                        ? 'bg-primary-600 text-white shadow-md'
-                        : 'border border-gray-300 hover:bg-gray-50'
-                    }`}
-                  >
-                    {i + 1}
-                  </button>
+                  <button key={i} onClick={() => setPage(i + 1)} className={`px-4 py-2 rounded-xl transition ${page === i + 1 ? 'bg-primary-600 text-white shadow-md' : 'border border-gray-300 hover:bg-gray-50'}`}>{i + 1}</button>
                 ))}
-                <button
-                  onClick={() => setPage((p) => Math.min(pagination.pages, p + 1))}
-                  disabled={page === pagination.pages}
-                  className="px-4 py-2 rounded-xl border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition"
-                >
-                  Next →
-                </button>
+                <button onClick={() => setPage((p) => Math.min(pagination.pages, p + 1))} disabled={page === pagination.pages} className="px-4 py-2 rounded-xl border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition">Next →</button>
               </div>
             )}
           </>
         )}
       </main>
+
+      {deleteId && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4" onClick={() => setDeleteId(null)}>
+          <div className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <div className="text-center">
+              <div className="text-4xl mb-3">⚠️</div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Delete Product?</h3>
+              <p className="text-sm text-gray-500 mb-6">This action cannot be undone.</p>
+              <div className="flex gap-3">
+                <button onClick={() => setDeleteId(null)} className="flex-1 px-4 py-2.5 border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-50 transition font-medium">Cancel</button>
+                <button onClick={handleDelete} className="flex-1 px-4 py-2.5 bg-red-600 text-white rounded-xl hover:bg-red-700 transition font-medium">Delete</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
