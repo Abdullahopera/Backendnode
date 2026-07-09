@@ -4,9 +4,6 @@ import cors from "cors";
 import morgan from "morgan";
 import rateLimit from "express-rate-limit";
 import routes from "./routes/index.js";
-import { register } from "./controller/user.js";
-import { login } from "./controller/auth.js";
-import { dashboard } from "./controller/dashboard.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 
 const app = express();
@@ -19,7 +16,7 @@ app.use(
     windowMs: 15 * 60 * 1000,
     max: 100,
     message: "Too many requests, please try again later",
-  }),
+  })
 );
 
 app.use(express.json({ limit: "10mb" }));
@@ -27,11 +24,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(morgan("dev"));
 
-app.use("/api", routes);
-app.post("/register", register);
-app.post("/login", login);
-
-app.get("/dashboard", dashboard);
+app.use(routes);
 
 app.get("/health", (req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });
