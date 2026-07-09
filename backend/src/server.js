@@ -1,18 +1,31 @@
 import app from "./app.js";
 import "dotenv/config";
-import connectDB from "./config/db.js";
+import mongoose from "mongoose";
 
-const PORT = process.env.PORT;
+process.on("uncaughtException", (err) => {
+  console.error("UNCAUGHT EXCEPTION:", err);
+  process.exit(1);
+});
+
+const PORT = process.env.PORT || 5000;
 
 const startServer = async () => {
-  await connectDB();
+  try {
+    await mongoose.connect(process.env.MONGODB_URI);
+    console.log(`MongoDB connected`);
 
-  app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT} in mode`);
-  });
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  } catch (err) {
+    console.error("Failed to start server:", err.message);
+    process.exit(1);
+  }
 };
 
-startServer().catch((err) => {
-  console.error("Failed to start server:", err);
-  process.exit(1);
+startServer();
+
+process.on("unhandledRejection", (err) => {
+  console.error("UNHANDLED REJECTION:", err);
+  server.close(() => process.exit(1));
 });
