@@ -4,6 +4,7 @@ import Landing from './pages/Landing';
 import Register from './pages/Register';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
+import ManageProduct from './pages/ManageProduct';
 
 export default function App() {
   const [token, setToken] = useState(localStorage.getItem('token'));
@@ -35,6 +36,8 @@ export default function App() {
       <Route path="/register" element={token ? <Navigate to="/dashboard" /> : <Register onAuth={handleAuth} />} />
       <Route path="/login" element={token ? <Navigate to="/dashboard" /> : <Login onAuth={handleAuth} />} />
       <Route path="/dashboard" element={token ? <Dashboard token={token} onLogout={handleLogout} /> : <Navigate to="/login" />} />
+      <Route path="/product/new" element={token ? <ManageProduct token={token} /> : <Navigate to="/login" />} />
+      <Route path="/product/edit/:id" element={token ? <ManageProduct token={token} /> : <Navigate to="/login" />} />
     </Routes>
   );
 }

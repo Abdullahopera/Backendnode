@@ -9,6 +9,7 @@ import {
   updateProduct,
   deleteProduct,
 } from "../controller/product.js";
+import { submitFeedback } from "../controller/feedback.js";
 import { protect, authorize } from "../middleware/auth.js";
 
 const router = Router();
@@ -21,5 +22,6 @@ router.get("/products/:id", getProduct);
 router.post("/products", protect, createProduct);
 router.put("/products/:id", protect, updateProduct);
 router.delete("/products/:id", protect, authorize("admin"), deleteProduct);
+router.post("/feedback", protect, submitFeedback);
 
 export default router;
