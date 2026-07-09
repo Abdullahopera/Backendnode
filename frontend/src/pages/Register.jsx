@@ -29,67 +29,46 @@ export default function Register({ onAuth }) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-indigo-100 flex items-center justify-center px-4 py-12">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen aurora-bg flex items-center justify-center px-4 py-12">
+      <div className="aurora-dot-1" />
+      <div className="relative z-10 w-full max-w-md">
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center gap-2 mb-6">
-            <span className="text-3xl">🛍️</span>
-            <span className="text-2xl font-bold text-primary-700">BuyIt</span>
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center text-lg font-bold shadow-lg shadow-primary-500/30">B</div>
+            <span className="text-2xl font-bold text-white">BuyIt</span>
           </Link>
-          <h2 className="text-3xl font-bold text-gray-900">Create your account</h2>
-          <p className="text-gray-500 mt-2">Join thousands of smart shoppers</p>
+          <h2 className="text-3xl font-bold text-white">Create your account</h2>
+          <p className="text-white/50 mt-2">Join thousands of smart shoppers</p>
         </div>
 
-        <div className="card p-8">
+        <div className="glass-card p-8">
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl mb-6 text-sm">
+            <div className="bg-red-500/10 border border-red-500/20 text-red-300 px-4 py-3 rounded-xl mb-6 text-sm">
               {error}
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">Full Name</label>
-              <input
-                type="text"
-                placeholder="John Doe"
-                className="input-field"
-                value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
-                required
-              />
+              <label className="block text-sm font-medium text-white/60 mb-1.5">Full Name</label>
+              <input type="text" placeholder="John Doe" className="glass-input" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">Email</label>
-              <input
-                type="email"
-                placeholder="you@example.com"
-                className="input-field"
-                value={form.email}
-                onChange={(e) => setForm({ ...form, email: e.target.value })}
-                required
-              />
+              <label className="block text-sm font-medium text-white/60 mb-1.5">Email</label>
+              <input type="email" placeholder="you@example.com" className="glass-input" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">Password</label>
-              <input
-                type="password"
-                placeholder="At least 6 characters"
-                className="input-field"
-                value={form.password}
-                onChange={(e) => setForm({ ...form, password: e.target.value })}
-                minLength={6}
-                required
-              />
+              <label className="block text-sm font-medium text-white/60 mb-1.5">Password</label>
+              <input type="password" placeholder="At least 6 characters" className="glass-input" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} minLength={6} required />
             </div>
-            <button type="submit" disabled={loading} className="btn-primary w-full text-lg">
+            <button type="submit" disabled={loading} className="btn-glass w-full text-lg">
               {loading ? 'Creating account...' : 'Create Account'}
             </button>
           </form>
 
-          <p className="text-center text-sm text-gray-500 mt-6">
+          <p className="text-center text-sm text-white/40 mt-6">
             Already have an account?{' '}
-            <Link to="/login" className="text-primary-600 font-semibold hover:text-primary-700">Sign in</Link>
+            <Link to="/login" className="text-primary-400 font-semibold hover:text-primary-300">Sign in</Link>
           </p>
         </div>
       </div>
